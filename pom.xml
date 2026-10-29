@@ -3,7 +3,7 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>net.raidstone</groupId>
+    <groupId>fr.skullbox</groupId>
     <artifactId>WorldGuardEvents</artifactId>
     <version>1.19.0</version>
 
@@ -18,7 +18,7 @@
     </scm>
     <!-- Fork Skull-box (l'amont Webbeh/WorldGuard-Events est archivé) : recompilé pour Minecraft 26.2,
          WorldGuard 7.0.19. Publié sur Reposilite (https://maven.skullbox.fr/releases) par la CI de la branche v2.
-         Paquet, groupId, artifactId et API inchangés : seuls la version et les cibles de compilation bougent. -->
+         groupId fr.skullbox (le jeton CI de Reposilite n'écrit que sous fr/skullbox) ; paquet net.raidstone.wgevents, artifactId et API inchangés. -->
     <properties>
         <java.version>25</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

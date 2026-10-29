@@ -43,7 +43,7 @@ jobs:
           MAVEN_TOKEN: ${{ secrets.MAVEN_WRITE_TOKEN }}
         run: |
           version=$(mvn -B -q help:evaluate -Dexpression=project.version -DforceStdout)
-          url="https://maven.skullbox.fr/releases/net/raidstone/WorldGuardEvents/$version/WorldGuardEvents-$version.pom"
+          url="https://maven.skullbox.fr/releases/fr/skullbox/WorldGuardEvents/$version/WorldGuardEvents-$version.pom"
           code=$(curl -s -o /dev/null -w '%{http_code}' -u "$MAVEN_USERNAME:$MAVEN_TOKEN" "$url")
           if [ "$code" = 200 ]; then echo "$version déjà publiée : rien à faire"; exit 0; fi
           mvn -B deploy -DskipTests
