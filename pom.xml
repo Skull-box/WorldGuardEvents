@@ -5,7 +5,7 @@
 
     <groupId>net.raidstone</groupId>
     <artifactId>WorldGuardEvents</artifactId>
-    <version>1.18.1</version>
+    <version>1.19.0</version>
 
     <name>WorldGuard Events</name>
     <description>Plugin that fires events when a player enters or leaves a WorldGuard area.</description>
@@ -16,15 +16,22 @@
         <developerConnection>scm:git:git@github.com:Webbeh/WorldGuard-Events.git</developerConnection>
         <url>https://github.com/Webbeh/WorldGuard-Events/tree/master</url>
     </scm>
+    <!-- Fork Skull-box (l'amont Webbeh/WorldGuard-Events est archivé) : recompilé pour Minecraft 26.2,
+         WorldGuard 7.0.19. Publié sur Reposilite (https://maven.skullbox.fr/releases) par la CI de la branche v2.
+         Paquet, groupId, artifactId et API inchangés : seuls la version et les cibles de compilation bougent. -->
+    <properties>
+        <java.version>25</java.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
     <distributionManagement>
-        <snapshotRepository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-        </snapshotRepository>
         <repository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+            <id>skullbox-releases</id>
+            <url>https://maven.skullbox.fr/releases</url>
         </repository>
+        <snapshotRepository>
+            <id>skullbox-snapshots</id>
+            <url>https://maven.skullbox.fr/snapshots</url>
+        </snapshotRepository>
     </distributionManagement>
 
     <developers>
@@ -49,17 +56,16 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.5.1</version>
+                <version>3.13.0</version>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <release>${java.version}</release>
                 </configuration>
             </plugin>
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
-                <version>3.1.0</version>
+                <version>3.3.1</version>
                 <executions>
                     <execution>
                         <id>attach-sources</id>
@@ -70,34 +76,7 @@
                 </executions>
             </plugin>
 
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.10.4</version>
-                <executions>
-                    <execution>
-                        <id>attach-javadocs</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
 
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-gpg-plugin</artifactId>
-                <version>1.5</version>
-                <executions>
-                    <execution>
-                        <id>sign-artifacts</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>sign</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
         </plugins>
     </build>
     <licenses>
@@ -110,8 +89,8 @@
 
     <repositories>
         <repository>
-            <id>spigot-repo</id>
-            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+            <id>papermc</id>
+            <url>https://repo.papermc.io/repository/maven-public/</url>
         </repository>
         <repository>
             <id>sk89q-repo</id>
@@ -127,18 +106,30 @@
             <version>20.1.0</version>
             <scope>compile</scope>
         </dependency>
-        <!-- WorldEdit -->
+        <!-- javax.annotation.Nonnull (n'est plus apporté par l'API serveur) -->
         <dependency>
-            <groupId>com.sk89q.worldedit</groupId>
-            <artifactId>worldedit-bukkit</artifactId>
-            <version>7.3.0-SNAPSHOT</version>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>jsr305</artifactId>
+            <version>3.0.2</version>
             <scope>provided</scope>
         </dependency>
-        <!-- WorldGuard -->
+        <!-- WorldGuard 7.0.19 (Minecraft 26.2) et le WorldEdit qu'il tire (7.4.4) -->
+        <dependency>
+            <groupId>com.sk89q.worldguard</groupId>
+            <artifactId>worldguard-bukkit</artifactId>
+            <version>7.0.19</version>
+            <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
         <dependency>
             <groupId>com.sk89q.worldguard</groupId>
             <artifactId>worldguard-core</artifactId>
-            <version>7.0.6-SNAPSHOT</version>
+            <version>7.0.19</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
@@ -147,18 +138,24 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        <!-- Spigot API -->
         <dependency>
-            <groupId>org.spigotmc</groupId>
-            <artifactId>spigot-api</artifactId>
-            <version>1.16.5-R0.1-SNAPSHOT</version>
+            <groupId>com.sk89q.worldedit</groupId>
+            <artifactId>worldedit-bukkit</artifactId>
+            <version>7.4.4</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
-                    <groupId>org.bukkit</groupId>
-                    <artifactId>bukkit</artifactId>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <!-- Paper API 26.2 -->
+        <dependency>
+            <groupId>io.papermc.paper</groupId>
+            <artifactId>paper-api</artifactId>
+            <version>26.2.build.134-stable</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 

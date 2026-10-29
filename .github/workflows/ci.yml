@@ -1,0 +1,49 @@
+name: CI
+
+# Fork Skull-box de WorldGuardEvents (amont archivé) : build à chaque push et PR.
+# Push sur v2 : publication de la version du pom sur Reposilite (https://maven.skullbox.fr/releases) si elle n'y est
+# pas encore (une version publiée est figée : changer la version du pom pour republier). Jar joint au résumé du run.
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: blacksmith-2vcpu-ubuntu-2404
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: JDK 25 (Temurin) + cache Maven
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '25'
+          cache: maven
+          server-id: skullbox-releases
+          server-username: MAVEN_USERNAME
+          server-password: MAVEN_TOKEN
+
+      - name: Build
+        run: mvn -B clean package
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: WorldGuardEvents
+          path: target/WorldGuardEvents-*.jar
+
+      - name: Publier sur Reposilite (v2, version absente)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/v2'
+        env:
+          MAVEN_USERNAME: ${{ secrets.MAVEN_WRITE_USER }}
+          MAVEN_TOKEN: ${{ secrets.MAVEN_WRITE_TOKEN }}
+        run: |
+          version=$(mvn -B -q help:evaluate -Dexpression=project.version -DforceStdout)
+          url="https://maven.skullbox.fr/releases/net/raidstone/WorldGuardEvents/$version/WorldGuardEvents-$version.pom"
+          code=$(curl -s -o /dev/null -w '%{http_code}' -u "$MAVEN_USERNAME:$MAVEN_TOKEN" "$url")
+          if [ "$code" = 200 ]; then echo "$version déjà publiée : rien à faire"; exit 0; fi
+          mvn -B deploy -DskipTests
